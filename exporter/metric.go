@@ -12,7 +12,7 @@ import (
 func SetMetric(currentBlock int64, restData *rest.RESTData, log *zap.Logger) {
 	operAddr := rest.OperAddr
 	consPubKey := restData.Validators.ConsPubKey
-	consAddr := restData.Validatorsets[consPubKey.Key][0]
+  addr := restData.Validatorsets[consPubKey.Key]
 
 	// chain
 	metricData.Network.BlockHeight = currentBlock
@@ -49,7 +49,9 @@ func SetMetric(currentBlock int64, restData *rest.RESTData, log *zap.Logger) {
 	metricData.Network.Gov.InVotingDidNotVoteCount = restData.Gov.InVotingDidNotVoteCount
 
 	// validator info
-	metricData.Validator.VotingPower = utils.StringToFloat64(restData.Validatorsets[consPubKey.Key][1])
+  if len(addr) > 1 {
+    metricData.Validator.VotingPower = utils.StringToFloat64(addr[1])
+  }
 	metricData.Validator.JailStatus = utils.BoolToFloat64(restData.Validators.Jailed)
 	metricData.Validator.MinSelfDelegation = utils.StringToFloat64(restData.Validators.MinSelfDelegation)
 	// validator delegation
@@ -141,7 +143,9 @@ func SetMetric(currentBlock int64, restData *rest.RESTData, log *zap.Logger) {
 	// labels addr
 	metricData.Validator.Address.Operator = operAddr
 	metricData.Validator.Address.Account = utils.GetAccAddrFromOperAddr(operAddr)
-	metricData.Validator.Address.ConsensusHex = utils.Bech32AddrToHexAddr(consAddr)
+  if len(addr) > 0 {
+    metricData.Validator.Address.ConsensusHex = utils.Bech32AddrToHexAddr(addr[0])
+  }
 	// labels upgrade
 	metricData.Upgrade.Name = restData.UpgradeInfo.Plan.Name
 	metricData.Upgrade.Time = restData.UpgradeInfo.Plan.Time

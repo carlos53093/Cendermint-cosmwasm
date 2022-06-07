@@ -76,17 +76,16 @@ func GetData(chain string, blockHeight int64, blockData Blocks, denom string) *R
 		rd.getValidatorsets(blockHeight)
 		rd.getValidator()
 		valMap, found := rd.Validatorsets[rd.Validators.ConsPubKey.Key]
-		if !found {
-			zap.L().Fatal("", zap.Bool("Success", false), zap.String("err", "Validator not found in the active set"))
+		if found {
+      rd.getSigningInfo(valMap[0])
+      consHexAddr := utils.Bech32AddrToHexAddr(valMap[0])
+      rd.getCommit(blockData, consHexAddr)
+      zap.L().Info("", zap.Bool("Success", true), zap.String("VP", valMap[1]))
 		}
 		rd.getBalances()
 		rd.getRewardsCommission()
-		rd.getSigningInfo(valMap[0])
 
-		consHexAddr := utils.Bech32AddrToHexAddr(valMap[0])
-		rd.getCommit(blockData, consHexAddr)
 		zap.L().Info("", zap.Bool("Success", true), zap.String("Moniker", rd.Validators.Description.Moniker))
-		zap.L().Info("", zap.Bool("Success", true), zap.String("VP", valMap[1]))
 		zap.L().Info("", zap.Bool("Success", true), zap.String("Precommit", fmt.Sprintf("%f", rd.Commit.ValidatorPrecommitStatus)))
 		zap.L().Info("\t", zap.Bool("Success", true), zap.String("Balances", fmt.Sprint(rd.Balances)))
 		zap.L().Info("\t", zap.Bool("Success", true), zap.String("Rewards", fmt.Sprint(rd.Rewards)))
