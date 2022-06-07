@@ -62,7 +62,6 @@ func Run(chain string, log *zap.Logger) {
 
 			currentBlockHeight, _ := strconv.ParseInt(block.Block.Header.Height, 10, 64)
 			if previousBlockHeight != currentBlockHeight {
-				fmt.Println("--------------------------- Start ---------------------------")
 				block.GetLastBlockTimestamp(currentBlockHeight)
 				zap.L().Info("\t", zap.Bool("Success", true), zap.String("Last block timestamp", block.Block.Header.LastTimestamp))
 				zap.L().Info("\t", zap.Bool("Success", true), zap.String("Current block timestamp", block.Block.Header.Timestamp))
@@ -90,10 +89,6 @@ func Run(chain string, log *zap.Logger) {
 				setUpgradeLabels(metricData, counterVecUpgrade)
 
 				previousBlockHeight = currentBlockHeight
-				fmt.Println("--------------------------- End ---------------------------")
-				fmt.Println("")
-				fmt.Println("")
-				fmt.Println("")
 			}
 		}
 	}()
